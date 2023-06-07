@@ -1,3 +1,4 @@
+#if the first config doesn't work, refer second one. make sure you comment the one which you aren't using
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -20,7 +21,6 @@ data:
             severity: slack
           group_wait: 10s
           repeat_interval: 1m
- 
     receivers:
     - name: alert-emailer
       email_configs:
@@ -33,3 +33,35 @@ data:
       slack_configs:
       - api_url: https://hooks.slack.com/services/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sz4Qk
         channel: '#devopscube-demo'
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+data:
+  config.yml: |-
+    global:
+    templates:
+    - '/etc/alertmanager/*.tmpl'
+    route:
+      group_by: ['alertname']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 86400s
+      receiver: 'email'
+    receivers:
+    - name: 'email'
+      email_configs:
+      - to: 'mail@gmail.com'
+        from: 'mail@gmail.com'
+        smarthost: smtp.gmail.com:587
+        auth_username: 'mail@gmail.com'
+        auth_identity: 'mail@gmail.com'
+        auth_password: 'password'
+    inhibit_rules:
+      - source_match:
+          severity: 'page'
+        target_match:
+          severity: 'page'
+        equal: ['alertname']

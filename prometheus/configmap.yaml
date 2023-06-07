@@ -8,15 +8,38 @@ metadata:
 data:
   prometheus.rules: |-
     groups:
-    - name: devopscube demo alert
+    - name: Infrastructure alerts
       rules:
       - alert: High Pod Memory
         expr: sum(container_memory_usage_bytes) > 1
         for: 1m
         labels:
-          severity: slack
+          severity: page
         annotations:
           summary: High Memory Usage
+      - alert: Cluster Memory Usage
+        expr: sum(container_memory_working_set_bytes{id="/"})/sum(machine_memory_bytes{}) * 100 > 90
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: Cluster Memory Usage > 90%
+      - alert: Cluster CPU Usage 
+        expr: sum (rate (container_cpu_usage_seconds_total{id="/"}[5m])) / sum (machine_cpu_cores{}) * 100 > 90
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "Cluster CPU Usage  > 90%"
+          description: "Cluster CPU Usage on host {{$labels.instance}} : (current value: {{ $value }})."
+      - alert: Pod Memory usage
+        expr: sum (container_memory_working_set_bytes{image!="",name=~"^k8s_.*"}) by (container_label_io_kubernetes_pod_name) > 4026531841
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "Pod Memory usage > 90%"
+          description: "Pod Memory usage on host {{$labels.instance}} : (current value: {{ $value }})."
   prometheus.yml: |-
     global:
       scrape_interval: 5s
@@ -29,14 +52,8 @@ data:
         static_configs:
         - targets:
           - "alertmanager.monitoring.svc:9093"
+
     scrape_configs:
-      - job_name: 'node-exporter'
-        kubernetes_sd_configs:
-          - role: endpoints
-        relabel_configs:
-        - source_labels: [__meta_kubernetes_endpoints_name]
-          regex: 'node-exporter'
-          action: keep
       - job_name: 'kubernetes-apiservers'
         kubernetes_sd_configs:
         - role: endpoints
@@ -48,6 +65,7 @@ data:
         - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
           action: keep
           regex: default;kubernetes;https
+
       - job_name: 'kubernetes-nodes'
         scheme: https
         tls_config:
@@ -64,6 +82,7 @@ data:
           regex: (.+)
           target_label: __metrics_path__
           replacement: /api/v1/nodes/${1}/proxy/metrics
+
       - job_name: 'kubernetes-pods'
         kubernetes_sd_configs:
         - role: pod
@@ -88,9 +107,15 @@ data:
         - source_labels: [__meta_kubernetes_pod_name]
           action: replace
           target_label: kubernetes_pod_name
+      
       - job_name: 'kube-state-metrics'
         static_configs:
           - targets: ['kube-state-metrics.kube-system.svc.cluster.local:8080']
+
+      - job_name: 'databse-exporter'
+        static_configs:
+          - targets: ['<YOUR-URL>:9104']
+
       - job_name: 'kubernetes-cadvisor'
         scheme: https
         tls_config:
@@ -107,6 +132,7 @@ data:
           regex: (.+)
           target_label: __metrics_path__
           replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+      
       - job_name: 'kubernetes-service-endpoints'
         kubernetes_sd_configs:
         - role: endpoints
@@ -135,19 +161,3 @@ data:
         - source_labels: [__meta_kubernetes_service_name]
           action: replace
           target_label: kubernetes_name
-      - job_name: 'kube-api-blackbox'
-        metrics_path: /probe
-        params:
-          module: [http_2xx]
-        static_configs:
-        - targets:
-            - https://www.google.com
-            - http://www.example.com
-            - https://prometheus.io
-        relabel_configs:
-        - source_labels: [__address__]
-          target_label: __param_target
-        - source_labels: [__param_target]
-          target_label: instance
-        - target_label: __address__
-          replacement: blackbox-exporter.monitoring.svc.cluster.local:9115

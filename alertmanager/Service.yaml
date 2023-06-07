@@ -5,7 +5,8 @@ metadata:
   namespace: monitoring
   annotations:
       prometheus.io/scrape: 'true'
-      prometheus.io/port:   '9093'
+      prometheus.io/path:   /
+      prometheus.io/port:   '8080'
 spec:
   selector: 
     app: alertmanager

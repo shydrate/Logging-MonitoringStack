@@ -1,14 +1,17 @@
 ---
+# Source: loki-stack/charts/loki/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: loki
+  name: loki-stack
   namespace: monitoring
   labels:
-    app.kubernetes.io/name: loki
+    app: loki
+    chart: loki-2.16.0
+    release: loki-stack
+    heritage: Helm
   annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "3100"
+    {}
 spec:
   type: ClusterIP
   ports:
@@ -17,4 +20,5 @@ spec:
       name: http-metrics
       targetPort: http-metrics
   selector:
-    app.kubernetes.io/name: loki
+    app: loki
+    release: loki-stack
