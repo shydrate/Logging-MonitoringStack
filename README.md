@@ -9,3 +9,7 @@ This repo contains following service in kustomize format:
     Node-exporter
     Prometheus
     Promtail
+## Files structure:
+![alt text](https://github.com/shydrate/Logging-MonitoringStack/blob/master/tree.png?raw=true)
+
+`Note: This is working directory.`
