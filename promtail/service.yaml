@@ -5,7 +5,7 @@ metadata:
   namespace: monitoring
 spec:
   selector:
-    app: promtail
+    app.kubernetes.io/name: promtail
   ports:
     - name: http
       protocol: TCP
