@@ -11,6 +11,6 @@ This repo contains following service in kustomize format:
     Promtail
 ## Files structure:
 
-<img src="tree.png" width="128"/>
+<img src="tree.png" />
 
 `Note: This is working directory.`
