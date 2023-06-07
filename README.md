@@ -10,6 +10,7 @@ This repo contains following service in kustomize format:
     Prometheus
     Promtail
 ## Files structure:
-![alt text](https://github.com/shydrate/Logging-MonitoringStack/blob/master/tree.png?raw=true)
+
+<img src="tree.png" width="128"/>
 
 `Note: This is working directory.`
