@@ -3,5 +3,7 @@ kind: Kustomization
 namespace: monitoring
 resources:
   - configmap.yaml
-  - deployment.yaml
+  - daemonset.yaml
   - service.yaml
+  - rbac.yaml
+  - account.yaml

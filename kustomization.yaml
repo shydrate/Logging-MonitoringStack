@@ -1,9 +1,9 @@
 resources:
-  - ./kube-state-metrics-configs
-  - ./alertmanager
-  - ./blackbox
-  - ./grafana
-  - ./node-exporter
-  - ./prometheus
-  - ./loki
-  - ./promtail
+  - kube-state-metrics-configs
+  - alertmanager
+  - blackbox
+  - grafana
+  - node-exporter
+  - prometheus
+  - loki
+  - promtail
