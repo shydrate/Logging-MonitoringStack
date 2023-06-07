@@ -1,8 +1,9 @@
 resources:
   - ./kube-state-metrics-configs
-  - ./kubernetes-alert-manager
-  - ./kubernetes-blackbox-self
-  - ./kubernetes-grafana
-  - ./kubernetes-node-grafana
-  - ./kubernetes-prometheus
-  - ./kubernetes-loki
+  - ./alertmanager
+  - ./blackbox
+  - ./grafana
+  - ./node-exporter
+  - ./prometheus
+  - ./lokiUpdated
+  - ./promtail
